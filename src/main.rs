@@ -2,7 +2,6 @@
 use chrono::offset::Utc;
 use clap::Clap;
 use csv::{Reader, Writer};
-use mimalloc::MiMalloc;
 use rand::{rngs::StdRng, Rng, SeedableRng};
 use serde::Deserialize;
 use std::{
@@ -18,10 +17,6 @@ use tpe::{
     categorical_range, density_estimation::DefaultEstimatorBuilder, histogram_estimator,
     parzen_estimator, range, range::RangeError, TpeOptimizer,
 };
-
-/// A fast cross platform allocator.
-#[global_allocator]
-static GLOBAL: MiMalloc = MiMalloc;
 
 /// A hyperparameter to be optimized.
 #[derive(Deserialize)]

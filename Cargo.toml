@@ -10,7 +10,6 @@ clap = "3.0.0-beta.2"
 csv = "*"
 chrono = "*"
 rand = "*"
-mimalloc = "*"
 serde = { version = "*", features = ["derive"] }
 serde_json = "*"
 tinyvec = "*"
