@@ -4,17 +4,37 @@ on:
   push: {branches: [main]}
   pull_request: {branches: [main]}
 
+env: {CARGO_TERM_COLOR: always}
+
 jobs:
+  mac:
+    runs-on: macos-latest
+    steps:
+    - run: cargo build --release
+    - uses: actions/upload-artifact@v2
+      with:
+        name: hype-mac
+        path: target/release/hype
+  windows:
+    runs-on: windows-latest
+    steps:
+    - run: cargo build --release
+    - uses: actions/upload-artifact@v2
+      with:
+        name: hype.exe
+        path: target/release/hype.exe
   build:
+    needs: [mac, windows]
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
     - run: cargo clippy --release
     - run: cargo test --release
-    - run: cargo install cross
-    - run: cross build --release --target x86_64-unknown-linux-musl
-    - run: cross build --release --target x86_64-apple-darwin
-    - run: cross build --release --target x86_64-pc-windows-gnu
+    - run: cargo build --release --target x86_64-unknown-linux-musl
+    - uses: actions/download-artifact@v2
+      with: {name: hype-mac}
+    - uses: actions/download-artifact@v2
+      with: {name: hype.exe}
     - uses: marvinpinto/action-automatic-releases@latest
       if: github.ref == 'refs/head/master'
       with:
@@ -22,6 +42,6 @@ jobs:
         automatic_release_tag: latest
         files: |
           LICENSE
-          target/x86_64-unknown-linux-musl/release/hype
-          target/x86_64-apple-darwin/release/hype
-          target/x86_64-pc-windows-gnu/release/hype.exe
+          hype
+          hype-mac
+          hype.exe
