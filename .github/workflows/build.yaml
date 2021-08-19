@@ -39,7 +39,7 @@ jobs:
     - uses: actions/download-artifact@v2
       with: {name: hype.exe}
     - uses: marvinpinto/action-automatic-releases@latest
-      if: github.ref == 'refs/head/main'
+      if: github.ref == 'refs/heads/main'
       with:
         repo_token: "${{ secrets.GITHUB_TOKEN }}"
         automatic_release_tag: latest
