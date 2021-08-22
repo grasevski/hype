@@ -1,6 +1,5 @@
 //! Command line hyperparameter tuner.
 use chrono::offset::Utc;
-use clap::Clap;
 use csv::{Reader, Writer};
 use rand::{rngs::StdRng, Rng, SeedableRng};
 use serde::Deserialize;
@@ -12,6 +11,7 @@ use std::{
     io::Write,
     process,
 };
+use structopt::StructOpt;
 use tinyvec::ArrayVec;
 use tpe::{
     categorical_range, density_estimation::DefaultEstimatorBuilder, histogram_estimator,
@@ -84,7 +84,7 @@ impl ParamState {
 }
 
 /// Run hyperparameter optimization on the given command.
-#[derive(Clap)]
+#[derive(StructOpt)]
 struct Opts {
     /// Json dict of hyperparameters to be optimized.
     params: String,
@@ -96,21 +96,21 @@ struct Opts {
     args: Vec<String>,
 
     /// Number of tuning iterations.
-    #[clap(short, long, default_value = "100")]
+    #[structopt(short, long, default_value = "100")]
     iter: u32,
 
     /// Random number generator seed.
-    #[clap(short, long, default_value = "0")]
+    #[structopt(short, long, default_value = "0")]
     seed: u64,
 
     /// Whether to maximize objective function.
-    #[clap(short, long)]
+    #[structopt(short, long)]
     maximize: bool,
 }
 
 /// Runs the hyperparameter optimization.
 fn main() -> Result<(), Box<dyn Error>> {
-    let opts = Opts::parse();
+    let opts = Opts::from_args();
     let params: Result<BTreeMap<String, Param>, _> = serde_json::from_str(&opts.params);
     let params: Result<BTreeMap<String, ParamState>, RangeError> = params?
         .into_iter()
